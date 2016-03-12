@@ -4,7 +4,51 @@
     android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.github.kimikage.uguisuan.NavigationDrawerFragment"
-    android:background="@color/background_material_light">
+    android:background="@color/background">
+
+    <GridLayout
+        android:theme="@style/AppTheme.Dark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:background="@color/primary_dark"
+        android:columnCount="3"
+        android:rowCount="3"
+        android:padding="@dimen/navigation_drawer_padding"
+        android:layout_marginBottom="@dimen/navigation_drawer_space">
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:id="@+id/imageView"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:src="@mipmap/ic_launcher"
+            android:contentDescription="Icon" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Body2"
+            android:text="Profile"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:layout_columnSpan="3"
+            android:id="@+id/profile"
+            android:singleLine="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
+            android:layout_row="2"
+            android:layout_column="0"
+            android:layout_columnSpan="3"
+            android:text="sub text"
+            android:id="@+id/sub"
+            android:singleLine="true" />
+
+    </GridLayout>
 
     <ListView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/drawer_list"

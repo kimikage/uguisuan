@@ -1,5 +1,8 @@
 <resources>
     <color name="primary">#558b2f</color>
-    <color name="primary_dark">#33691E</color>
+    <color name="primary_dark">#33691e</color>
     <color name="accent">#795548</color>
+    <color name="background">#fafafa</color>
+    <color name="fading">#33000000</color>
+    <color name="text_primary_dark">#ffffff</color>
 </resources>
