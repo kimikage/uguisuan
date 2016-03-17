@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/navigation_drawer_item_height">
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/navigation_drawer_padding"
+        android:paddingEnd="@dimen/navigation_drawer_padding"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall"
+        android:singleLine="true"
+        android:layout_centerVertical="true"
+        android:paddingLeft="@dimen/navigation_drawer_padding"
+        android:paddingRight="@dimen/navigation_drawer_padding"
+        android:text="Hoge"
+        android:alpha="0.54" />
+
+    <ImageView
+        android:id="@+id/icon_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_expand_more_black_24dp"
+        android:visibility="visible"
+        android:paddingEnd="@dimen/navigation_drawer_padding"
+        android:paddingRight="@dimen/navigation_drawer_padding"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:alpha="0.54" />
+
+    <ImageView
+        android:id="@+id/icon_less"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_expand_less_black_24dp"
+        android:visibility="invisible"
+        android:paddingEnd="@dimen/navigation_drawer_padding"
+        android:paddingRight="@dimen/navigation_drawer_padding"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:alpha="0.54" />
+</RelativeLayout>

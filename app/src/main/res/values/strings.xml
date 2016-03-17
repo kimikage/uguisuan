@@ -1,9 +1,13 @@
 <resources>
     <string name="app_name">Uguisu-Anne</string>
 
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+    <string name="title_voice">Voice</string>
+    <string name="action_load">Load</string>
+    <string name="action_record">Record</string>
+    <string name="action_save">Save</string>
+
+    <string name="action_play">Play</string>
+    <string name="action_pause">Pause</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

@@ -5,4 +5,10 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_play_pause"
+        android:orderInCategory="200"
+        android:title="@string/action_play"
+        app:showAsAction="always" />
 </menu>

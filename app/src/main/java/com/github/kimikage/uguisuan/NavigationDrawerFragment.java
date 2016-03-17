@@ -22,10 +22,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.ExpandableListView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -56,7 +57,7 @@ public class NavigationDrawerFragment extends Fragment {
     private ActionBarDrawerToggle mDrawerToggle;
 
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerListView;
+    private ExpandableListView mDrawerListView;
     private View mDrawerView;
     private View mFragmentContainerView;
 
@@ -97,27 +98,53 @@ public class NavigationDrawerFragment extends Fragment {
                              Bundle savedInstanceState) {
         mDrawerView = inflater.inflate(R.layout.drawer_main, container, false);
 
-        mDrawerListView = (ListView) mDrawerView.findViewById(R.id.drawer_list);
+        mDrawerListView = (ExpandableListView) mDrawerView.findViewById(R.id.drawer_list);
 
         if (mDrawerListView != null) {
-            mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    selectItem(position);
-                }
-            });
-            mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                    getActivity(),
-                    android.R.layout.simple_list_item_activated_1,
-                    android.R.id.text1,
-                    new String[]{
-                            getString(R.string.title_section1),
-                            getString(R.string.title_section2),
-                            getString(R.string.title_section3),
-                    }));
-            mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+            initializeDrawerList();
         }
+
         return mDrawerView;
+    }
+
+    private void initializeDrawerList() {
+        Context context = mDrawerView.getContext();
+        NavigationDrawerListAdapter adapter = new NavigationDrawerListAdapter(context);
+
+
+        List<NavigationDrawerItem> voiceChildren = new ArrayList<>();
+        voiceChildren.add(new NavigationDrawerItem(
+                R.string.action_load,
+                -1));
+        if (false) {
+            voiceChildren.add(new NavigationDrawerItem(
+                    R.string.action_record,
+                    -1));
+        }
+        voiceChildren.add(new NavigationDrawerItem(
+                R.string.action_save,
+                -1));
+
+        adapter.addGroup(R.string.title_voice, voiceChildren);
+
+        mDrawerListView.setAdapter(adapter);
+
+        mDrawerListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView parent, View view,
+                                        int groupPosition, long id) {
+                return false;
+            }
+        });
+        mDrawerListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View view,
+                                        int groupPosition, int childPosition, long id) {
+                mCurrentSelectedPosition = (int) id;
+                return false;
+            }
+        });
+
     }
 
     public boolean isDrawerOpen() {
