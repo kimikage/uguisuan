@@ -1,20 +1,71 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.model.application'
 
-android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+model {
+    android {
+        compileSdkVersion 23
+        buildToolsVersion "23.0.2"
 
-    defaultConfig {
-        applicationId "com.github.kimikage.uguisuan"
-        minSdkVersion 16
-        targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        defaultConfig {
+            applicationId "com.github.kimikage.uguisuan"
+            minSdkVersion.apiLevel 16
+            targetSdkVersion.apiLevel 23
+            versionCode 1
+            versionName "1.0"
+        }
+        buildTypes {
+            debug {
+                minifyEnabled false
+                ndk {
+                    debuggable true
+                }
+            }
+            release {
+                minifyEnabled false
+                proguardFiles.add(file('proguard-rules.pro'))
+                ndk {
+                    debuggable true
+                }
+            }
+        }
+
+        ndk {
+            moduleName "wave"
+            toolchain "clang"
+            // toolchainVersion ""
+            cppFlags.addAll(["-Weverything", "-Wno-c++98-compat", "-Wno-c++98-compat-pedantic",
+                             "-Wno-system-headers",
+                             "-std=c++11", "-fno-exceptions", "-fno-rtti"])
+            ldLibs.addAll(['atomic', 'android', 'log', 'OpenSLES'])
+            stl "c++_static"
+        }
+
+        productFlavors {
+            create("arm") {
+                ndk.abiFilters.add("armeabi")
+            }
+            create("arm7") {
+                ndk.abiFilters.add("armeabi-v7a")
+            }
+            create("arm8") {
+                ndk.abiFilters.add("arm64-v8a")
+            }
+            create("x86") {
+                ndk.abiFilters.add("x86")
+            }
+            create("x86_64") {
+                ndk.abiFilters.add("x86_64")
+            }
+            // To include all cpu architectures, leaves abiFilters empty
+            create("all")
+        }
+
+        sources.main {
+            jni {
+                source {
+                }
+            }
+            jniLibs {
+            }
         }
     }
 }

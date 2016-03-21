@@ -16,19 +16,34 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
+    static {
+        System.loadLibrary("wave");
+    }
+
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private DrawerLayout mDrawerLayout;
-
     private CharSequence mTitle;
+
+    /*
+     * jni function implementations...
+     */
+    public static native void createSLEngine();
+
+    public static native void deleteSLEngine();
+
+    public static native void startPlay();
+
+    public static native void stopPlay();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +70,31 @@ public class MainActivity extends AppCompatActivity
             });
 
             toolbar.inflateMenu(R.menu.global);
+            toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem menuItem) {
+                    switch (menuItem.getItemId()) {
+                        case R.id.action_play_pause:
+                            play();
+                            return true;
+                    }
+                    return false;
+                }
+            });
+            View menuItemPlay = findViewById(R.id.action_play_pause);
+            if (menuItemPlay != null) {
+                menuItemPlay.setSoundEffectsEnabled(false);
+            }
         }
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, mDrawerLayout);
+    }
+
+    @Override
+    public void finish() {
+        deleteSLEngine();
+        super.finish();
     }
 
     @Override
@@ -72,6 +108,15 @@ public class MainActivity extends AppCompatActivity
 
     public void onSectionAttached(int number) {
         // TBD.
+    }
+
+    public void play() {
+        try {
+            createSLEngine();
+            startPlay();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -113,5 +158,4 @@ public class MainActivity extends AppCompatActivity
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
-
 }
