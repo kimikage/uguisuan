@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout mDrawerLayout;
     private CharSequence mTitle;
 
+    private boolean mIsPlaying = false;
+
     /*
      * jni function implementations...
      */
@@ -75,16 +77,25 @@ public class MainActivity extends AppCompatActivity
                 public boolean onMenuItemClick(MenuItem menuItem) {
                     switch (menuItem.getItemId()) {
                         case R.id.action_play_pause:
-                            play();
+                            if (mIsPlaying) {
+                                pause();
+                            } else {
+                                play();
+                            }
+                            menuItem.setTitle(getResources().getString(
+                                    mIsPlaying ? R.string.action_pause : R.string.action_play));
+                            menuItem.setIcon(
+                                    mIsPlaying ? R.drawable.ic_pause_circle_filled_white_48dp :
+                                            R.drawable.ic_play_circle_filled_white_48dp);
+                            View v = findViewById(R.id.action_play_pause);
+                            if (v != null) {
+                                v.setSoundEffectsEnabled(mIsPlaying);
+                            }
                             return true;
                     }
                     return false;
                 }
             });
-            View menuItemPlay = findViewById(R.id.action_play_pause);
-            if (menuItemPlay != null) {
-                menuItemPlay.setSoundEffectsEnabled(false);
-            }
         }
 
         // Set up the drawer.
@@ -117,6 +128,16 @@ public class MainActivity extends AppCompatActivity
         } catch (Exception e) {
             e.printStackTrace();
         }
+        mIsPlaying = true;
+    }
+
+    public void pause() {
+        try {
+            stopPlay();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mIsPlaying = false;
     }
 
     /**

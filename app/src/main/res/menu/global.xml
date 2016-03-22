@@ -10,5 +10,6 @@
         android:id="@+id/action_play_pause"
         android:orderInCategory="200"
         android:title="@string/action_play"
+        android:icon="@drawable/ic_play_circle_filled_white_48dp"
         app:showAsAction="always" />
 </menu>
