@@ -140,7 +140,14 @@ public class NavigationDrawerFragment extends Fragment {
             @Override
             public boolean onChildClick(ExpandableListView parent, View view,
                                         int groupPosition, int childPosition, long id) {
-                mCurrentSelectedPosition = (int) id;
+                mCurrentSelectedPosition = (int) (groupPosition << 16) | childPosition;
+
+                if (mDrawerLayout != null) {
+                    mDrawerLayout.closeDrawer(mFragmentContainerView);
+                }
+                if (mCallbacks != null) {
+                    mCallbacks.onNavigationDrawerItemSelected(id);
+                }
                 return false;
             }
         });
@@ -223,12 +230,6 @@ public class NavigationDrawerFragment extends Fragment {
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
         }
-        if (mDrawerLayout != null) {
-            mDrawerLayout.closeDrawer(mFragmentContainerView);
-        }
-        if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
-        }
     }
 
     @Override
@@ -289,6 +290,6 @@ public class NavigationDrawerFragment extends Fragment {
         /**
          * Called when an item in the navigation drawer is selected.
          */
-        void onNavigationDrawerItemSelected(int position);
+        void onNavigationDrawerItemSelected(long id);
     }
 }

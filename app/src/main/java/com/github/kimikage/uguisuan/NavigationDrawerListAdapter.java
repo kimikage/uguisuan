@@ -64,7 +64,8 @@ public class NavigationDrawerListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
-        return (groupPosition << 16) | childPosition;
+        NavigationDrawerItem child = (NavigationDrawerItem)getChild(groupPosition, childPosition);
+        return child.getLabelId();
     }
 
     @Override
