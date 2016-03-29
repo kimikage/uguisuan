@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:paddingLeft="@dimen/dialog_horizontal_padding"
+              android:paddingRight="@dimen/dialog_horizontal_padding"
+              android:paddingTop="@dimen/dialog_top_padding"
+              android:paddingBottom="@dimen/dialog_bottom_padding"
+              tools:context="com.github.kimikage.uguisuan.ProgressDialogFragment"
+              android:minWidth="@dimen/dialog_min_width">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:text="Message"
+        android:id="@+id/message"
+        android:layout_gravity="start"
+        android:alpha="0.87"/>
+
+    <ProgressBar
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:max="100"
+        android:progress="20"/>
+
+</LinearLayout>

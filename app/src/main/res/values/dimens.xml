@@ -12,4 +12,10 @@
 
     <dimen name="navigation_drawer_item_height">48dp</dimen>
     <dimen name="navigation_drawer_item_text_padding_start">72dp</dimen>
+
+    <dimen name="dialog_horizontal_padding">24dp</dimen>
+    <dimen name="dialog_top_padding">24dp</dimen>
+    <dimen name="dialog_bottom_padding">24dp</dimen>
+
+    <dimen name="dialog_min_width">280dp</dimen>
 </resources>

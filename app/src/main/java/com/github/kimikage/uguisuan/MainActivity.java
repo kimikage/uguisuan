@@ -11,6 +11,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks,
+        WaveReaderFragment.WaveReaderCallbacks {
 
     static {
         System.loadLibrary("wave");
@@ -35,6 +37,8 @@ public class MainActivity extends AppCompatActivity
     private CharSequence mTitle;
 
     private boolean mIsPlaying = false;
+
+    private WaveReaderFragment mWaveReader;
 
     /*
      * jni function implementations...
@@ -118,7 +122,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void load() {
-        // TBD.
+        WaveReaderFragment f = WaveReaderFragment.newInstance("!");
+        FragmentTransaction ft = this.getSupportFragmentManager().beginTransaction();
+        ft.add(f, WaveReaderFragment.TAG);
+        ft.commit();
     }
 
     public void onSectionAttached(int number) {
@@ -142,6 +149,15 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
         mIsPlaying = false;
+    }
+
+    @Override
+    public void onReadFinished() {
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment f = fm.findFragmentByTag(WaveReaderFragment.TAG);
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.remove(f);
+        ft.commit();
     }
 
     /**
