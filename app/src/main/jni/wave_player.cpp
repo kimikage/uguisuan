@@ -42,6 +42,7 @@ WavePlayer::WavePlayer(SLmilliHertz sampleRate, SLEngineItf engineItf) :
         mOutputMixObj(nullptr),
         mPlayerObj(nullptr),
         mPlayItf(nullptr),
+        mVolumeItf(nullptr),
         mPlayBufferQueueItf(nullptr),
         mJavaCallback(nullptr) {
     SLresult result;
@@ -89,6 +90,10 @@ WavePlayer::WavePlayer(SLmilliHertz sampleRate, SLEngineItf engineItf) :
     result = (*mPlayerObj)->GetInterface(mPlayerObj, SL_IID_PLAY, &mPlayItf);
     CheckError(result);
 
+    // get the volume interface
+    result = (*mPlayerObj)->GetInterface(mPlayerObj, SL_IID_VOLUME, &mVolumeItf);
+    CheckError(result);
+
     // get the buffer queue interface
     result = (*mPlayerObj)->GetInterface(mPlayerObj, SL_IID_BUFFERQUEUE, &mPlayBufferQueueItf);
     CheckError(result);
@@ -109,6 +114,7 @@ WavePlayer::~WavePlayer() {
         (*mPlayerObj)->Destroy(mPlayerObj);
         mPlayerObj = nullptr;
         mPlayItf = nullptr;
+        mVolumeItf = nullptr;
     }
 
     // destroy output mix object, and invalidate all associated interfaces
@@ -149,6 +155,9 @@ SLresult WavePlayer::Start(void) {
     }
 
     result = (*mPlayItf)->SetPlayState(mPlayItf, SL_PLAYSTATE_STOPPED);
+    CheckError(result);
+
+    result = (*mVolumeItf)->SetVolumeLevel(mVolumeItf, 0);
     CheckError(result);
 
     // send pre-defined audio buffers to device

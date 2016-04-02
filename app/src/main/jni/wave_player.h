@@ -42,6 +42,7 @@ private:
     SLObjectItf mOutputMixObj;
     SLObjectItf mPlayerObj;
     SLPlayItf mPlayItf;
+    SLVolumeItf mVolumeItf;
     SLAndroidSimpleBufferQueueItf mPlayBufferQueueItf;
 
     WaveContext mContext;
