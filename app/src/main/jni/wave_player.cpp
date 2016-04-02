@@ -18,13 +18,23 @@ void WavePlayer::ProcessSLCallback(SLAndroidSimpleBufferQueueItf bq) {
     assert(bq == mPlayBufferQueueItf);
 
     SLresult result;
-    if (mContext->pData < (mContext->pDataBase + mContext->size)) {
-        result = (*bq)->Enqueue(bq, static_cast<void *>(mContext->pData),
-                                sizeof(SLint16) * AUDIO_DATA_BUFFER_SIZE); // Size given in bytes
+    size_t remain = mContext.base + mContext.size - mContext.current;
+    if (remain > 0) {
+        size_t size = remain < AUDIO_DATA_BUFFER_SIZE ? remain : AUDIO_DATA_BUFFER_SIZE;
+        SLint16 *p = const_cast<SLint16 *>(mContext.current);
+        result = (*bq)->Enqueue(bq, static_cast<void *>(p),
+                                size * sizeof(SLint16)); // Size given in bytes
         if (result != SL_RESULT_SUCCESS) {
             CheckError(result);
         }
-        mContext->pData += AUDIO_DATA_BUFFER_SIZE;
+        mContext.current += size;
+    }
+    if (mJavaCallback != nullptr) {
+        if (remain > 0) {
+            mJavaCallback->run(mContext.size - remain);
+        } else {
+            mJavaCallback->run(-1);
+        }
     }
 }
 
@@ -32,7 +42,8 @@ WavePlayer::WavePlayer(SLmilliHertz sampleRate, SLEngineItf engineItf) :
         mOutputMixObj(nullptr),
         mPlayerObj(nullptr),
         mPlayItf(nullptr),
-        mPlayBufferQueueItf(nullptr) {
+        mPlayBufferQueueItf(nullptr),
+        mJavaCallback(nullptr) {
     SLresult result;
 
     result = (*engineItf)->CreateOutputMix(engineItf, &mOutputMixObj, 0, nullptr, nullptr);
@@ -89,21 +100,6 @@ WavePlayer::WavePlayer(SLmilliHertz sampleRate, SLEngineItf engineItf) :
     result = (*mPlayItf)->SetPlayState(mPlayItf, SL_PLAYSTATE_STOPPED);
     CheckError(result);
 
-    mContext = new CallbackContext;
-
-    mContext->pDataBase = mPcmData;
-    mContext->pData = mContext->pDataBase;
-    mContext->size = AUDIO_DATA_STORAGE_SIZE;
-
-    // generate beep(square wave)
-    for (int i = 0; i < AUDIO_DATA_STORAGE_SIZE; ++i) {
-        if ((i % 100) < 50) {
-            mPcmData[i] = 0x4000;
-        }
-        else {
-            mPcmData[i] = -0x4000;
-        }
-    }
 }
 
 WavePlayer::~WavePlayer() {
@@ -116,14 +112,30 @@ WavePlayer::~WavePlayer() {
     }
 
     // destroy output mix object, and invalidate all associated interfaces
-    if (mOutputMixObj) {
+    if (mOutputMixObj != nullptr) {
         (*mOutputMixObj)->Destroy(mOutputMixObj);
         mOutputMixObj = nullptr;
     }
 
-    if (mContext != nullptr) {
-        delete mContext;
+    if (mJavaCallback != nullptr) {
+        delete mJavaCallback;
     }
+}
+
+
+void WavePlayer::SetContext(const SLint16 *base, const SLint16 *current, size_t size) {
+    mContext.base = base;
+    mContext.current = current;
+    mContext.size = size;
+}
+
+
+void WavePlayer::SetCallback(JavaVM *vm, jclass clazz, std::string methodName) {
+    if (mJavaCallback != nullptr) {
+        delete mJavaCallback;
+    }
+    mJavaCallback = new JavaCallback(vm, clazz, methodName);
+    mJavaCallback->initialize();
 }
 
 SLresult WavePlayer::Start(void) {
@@ -163,6 +175,10 @@ void WavePlayer::Stop(void) {
 
     result = (*mPlayItf)->SetPlayState(mPlayItf, SL_PLAYSTATE_STOPPED);
     CheckError(result);
+
+    if (mJavaCallback != nullptr) {
+        mJavaCallback->run(-1);
+    }
 }
 
 }

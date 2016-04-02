@@ -8,7 +8,13 @@
 #ifndef UGUISUAN_WAVE_ENGINE_H
 #define UGUISUAN_WAVE_ENGINE_H
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreserved-id-macro"
+
 #include <cstdint>
+
+#pragma clang diagnostic pop
+
 #include <cassert>
 
 #include <SLES/OpenSLES.h>

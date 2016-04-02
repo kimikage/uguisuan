@@ -8,17 +8,24 @@
 package com.github.kimikage.uguisuan;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 
 public class UguisuAnne extends Application {
     private static final String TAG = "UguisuAnne";
+    private static Context sContext;
 
     private Wave mSourceWave = null;
+
+    public static Context getContext() {
+        return sContext;
+    }
 
     @Override
     public void onCreate() {
         Log.d(TAG, "onCreate");
         super.onCreate();
+        sContext = this;
     }
 
     public Wave getSourceWave() {
@@ -31,4 +38,5 @@ public class UguisuAnne extends Application {
         }
         mSourceWave = sourceWave;
     }
+
 }

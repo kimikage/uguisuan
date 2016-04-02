@@ -23,6 +23,11 @@
             android:name=".WaveReaderService"
             android:exported="false">
         </service>
+
+        <service
+            android:name=".WavePlayerService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

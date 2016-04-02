@@ -23,11 +23,8 @@ import android.view.ViewGroup;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
-        WaveReaderFragment.WaveReaderCallbacks {
-
-    static {
-        System.loadLibrary("wave");
-    }
+        WaveReaderFragment.WaveReaderCallbacks,
+        WavePlayerFragment.WavePlayerCallbacks {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -35,21 +32,6 @@ public class MainActivity extends AppCompatActivity
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private DrawerLayout mDrawerLayout;
     private CharSequence mTitle;
-
-    private boolean mIsPlaying = false;
-
-    private WaveReaderFragment mWaveReader;
-
-    /*
-     * jni function implementations...
-     */
-    public static native void createSLEngine();
-
-    public static native void deleteSLEngine();
-
-    public static native void startPlay();
-
-    public static native void stopPlay();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,19 +63,10 @@ public class MainActivity extends AppCompatActivity
                 public boolean onMenuItemClick(MenuItem menuItem) {
                     switch (menuItem.getItemId()) {
                         case R.id.action_play_pause:
-                            if (mIsPlaying) {
+                            if (isPlaying()) {
                                 pause();
                             } else {
                                 play();
-                            }
-                            menuItem.setTitle(getResources().getString(
-                                    mIsPlaying ? R.string.action_pause : R.string.action_play));
-                            menuItem.setIcon(
-                                    mIsPlaying ? R.drawable.ic_pause_circle_filled_white_48dp :
-                                            R.drawable.ic_play_circle_filled_white_48dp);
-                            View v = findViewById(R.id.action_play_pause);
-                            if (v != null) {
-                                v.setSoundEffectsEnabled(mIsPlaying);
                             }
                             return true;
                     }
@@ -102,13 +75,14 @@ public class MainActivity extends AppCompatActivity
             });
         }
 
+        setPlayAndPauseButton();
+
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, mDrawerLayout);
     }
 
     @Override
     public void finish() {
-        deleteSLEngine();
         super.finish();
     }
 
@@ -121,11 +95,34 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void setPlayAndPauseButton() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar == null) {
+            return;
+        }
+        if (toolbar.getMenu() == null) {
+            return;
+        }
+        boolean playing = isPlaying();
+
+        MenuItem menuItem = (MenuItem) toolbar.getMenu().findItem(R.id.action_play_pause);
+        menuItem.setTitle(getResources().getString(
+                playing ? R.string.action_pause : R.string.action_play));
+        menuItem.setIcon(
+                playing ? R.drawable.ic_pause_circle_filled_white_48dp :
+                        R.drawable.ic_play_circle_filled_white_48dp);
+        View v = findViewById(R.id.action_play_pause);
+        if (v != null) {
+            v.setSoundEffectsEnabled(playing);
+        }
+    }
+
     private void load() {
+        if (isPlaying()) {
+            pause();
+        }
         WaveReaderFragment f = WaveReaderFragment.newInstance("!");
-        FragmentTransaction ft = this.getSupportFragmentManager().beginTransaction();
-        ft.add(f, WaveReaderFragment.TAG);
-        ft.commit();
+        addFragment(f, WaveReaderFragment.TAG);
     }
 
     public void onSectionAttached(int number) {
@@ -133,31 +130,57 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void play() {
-        try {
-            createSLEngine();
-            startPlay();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        mIsPlaying = true;
+        WavePlayerFragment f = WavePlayerFragment.newInstance();
+        addFragment(f, WavePlayerFragment.TAG);
     }
 
     public void pause() {
-        try {
-            stopPlay();
-        } catch (Exception e) {
-            e.printStackTrace();
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment f = fm.findFragmentByTag(WavePlayerFragment.TAG);
+        if (f == null) {
+            setPlayAndPauseButton();
+            return;
         }
-        mIsPlaying = false;
+        ((WavePlayerFragment) f).stopPlay();
     }
 
     @Override
     public void onReadFinished() {
+        removeFragment(WaveReaderFragment.TAG);
+    }
+
+    @Override
+    public void onStartPlay() {
+        setPlayAndPauseButton();
+    }
+
+    @Override
+    public void onStopPlay() {
+        removeFragment(WavePlayerFragment.TAG);
+        setPlayAndPauseButton();
+    }
+
+    private void addFragment(Fragment fragment, String fragmentTag) {
+        FragmentTransaction ft = this.getSupportFragmentManager().beginTransaction();
+        ft.add(fragment, fragmentTag);
+        ft.commit();
+    }
+
+    private void removeFragment(String fragmentTag) {
         FragmentManager fm = getSupportFragmentManager();
-        Fragment f = fm.findFragmentByTag(WaveReaderFragment.TAG);
+        Fragment f = fm.findFragmentByTag(fragmentTag);
         FragmentTransaction ft = fm.beginTransaction();
         ft.remove(f);
         ft.commit();
+    }
+
+    private boolean isPlaying() {
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment f = fm.findFragmentByTag(WavePlayerFragment.TAG);
+        if (f == null) {
+            return false;
+        }
+        return ((WavePlayerFragment) f).isPlaying();
     }
 
     /**
