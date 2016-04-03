@@ -34,16 +34,16 @@ private:
     bool mIsInitialized;
     bool mIsFinishing;
 
-    static void *run(void *args);
+    static void *Run(void *args);
 
 public:
     JavaCallback(JavaVM *vm, jclass clazz, const std::string methodName);
 
     ~JavaCallback();
 
-    void initialize();
+    void Initialize();
 
-    void run(int param);
+    void Run(int param);
 };
 
 }

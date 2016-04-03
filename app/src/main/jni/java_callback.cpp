@@ -15,16 +15,16 @@ JavaCallback::JavaCallback(JavaVM *vm, jclass clazz, std::string methodName) :
         mParam(0), mIsInitialized(false), mIsFinishing(false) {
 }
 
-void JavaCallback::initialize() {
+void JavaCallback::Initialize() {
     sem_init(&mSem, 0, 0); // not shared
-    int ret = pthread_create(&mThread, nullptr, &run, this);
+    int ret = pthread_create(&mThread, nullptr, &Run, this);
     if (ret != 0) {
         LOGD("failed: pthread_create");
     }
     mIsInitialized = true;
 }
 
-void *JavaCallback::run(void *args) {
+void *JavaCallback::Run(void *args) {
     JavaCallback *data = reinterpret_cast<JavaCallback *>(args);
     JNIEnv *env = nullptr;
     jint ret;
@@ -66,7 +66,7 @@ void *JavaCallback::run(void *args) {
     return nullptr;
 }
 
-void JavaCallback::run(int param) {
+void JavaCallback::Run(int param) {
     mParam = param;
     sem_post(&mSem);
 }

@@ -31,9 +31,9 @@ void WavePlayer::ProcessSLCallback(SLAndroidSimpleBufferQueueItf bq) {
     }
     if (mJavaCallback != nullptr) {
         if (remain > 0) {
-            mJavaCallback->run(mContext.size - remain);
+            mJavaCallback->Run(mContext.size - remain);
         } else {
-            mJavaCallback->run(-1);
+            mJavaCallback->Run(-1);
         }
     }
 }
@@ -141,7 +141,7 @@ void WavePlayer::SetCallback(JavaVM *vm, jclass clazz, std::string methodName) {
         delete mJavaCallback;
     }
     mJavaCallback = new JavaCallback(vm, clazz, methodName);
-    mJavaCallback->initialize();
+    mJavaCallback->Initialize();
 }
 
 SLresult WavePlayer::Start(void) {
@@ -186,7 +186,7 @@ void WavePlayer::Stop(void) {
     CheckError(result);
 
     if (mJavaCallback != nullptr) {
-        mJavaCallback->run(-1);
+        mJavaCallback->Run(-1);
     }
 }
 

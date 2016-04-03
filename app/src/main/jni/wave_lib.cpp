@@ -47,14 +47,14 @@ JNIEXPORT void JNICALL
 Java_com_github_kimikage_uguisuan_WavePlayerService_createSLEngine(JNIEnv *env, jclass type) {
     WaveEngine &engine = WaveEngine::GetInstance();
     engine.CreateEngine();
-    WavePlayer *player = engine.getPlayer();
+    WavePlayer *player = engine.GetPlayer();
     player->SetCallback(g::vm, g::classWavePlayerService, u8"update");
 }
 
 JNIEXPORT void JNICALL
 Java_com_github_kimikage_uguisuan_WavePlayerService_startPlay(JNIEnv *env, jclass type,
                                                               jbyteArray pcm) {
-    WavePlayer *player = WaveEngine::GetInstance().getPlayer();
+    WavePlayer *player = WaveEngine::GetInstance().GetPlayer();
     assert(player);
 
     jboolean isCopy = JNI_FALSE;
@@ -71,7 +71,7 @@ Java_com_github_kimikage_uguisuan_WavePlayerService_startPlay(JNIEnv *env, jclas
 
 JNIEXPORT void JNICALL
 Java_com_github_kimikage_uguisuan_WavePlayerService_stopPlay(JNIEnv *env, jclass type) {
-    WavePlayer *player = WaveEngine::GetInstance().getPlayer();
+    WavePlayer *player = WaveEngine::GetInstance().GetPlayer();
     assert(player);
 
     player->Stop();

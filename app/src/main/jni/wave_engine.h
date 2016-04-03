@@ -53,7 +53,7 @@ public:
 
     SLresult DeleteEngine();
 
-    inline WavePlayer *getPlayer() {
+    inline WavePlayer *GetPlayer() const {
         return mPlayer;
     }
 
