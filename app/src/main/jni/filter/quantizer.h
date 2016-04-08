@@ -16,6 +16,8 @@ namespace filter {
 class Quantizer : public Filter<float, int16_t> {
 private:
     static constexpr float SCALE = 32768.0f;
+    static const int32_t I16_MAX = 0x7FFF;
+    static const int32_t I16_MIN = -0x8000;
 public:
     Quantizer();
 

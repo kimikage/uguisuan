@@ -18,15 +18,10 @@ Quantizer::~Quantizer() {
 }
 
 inline void Quantizer::Proc(
-        const float *__restrict__ src, int16_t *__restrict__ sink, size_t n) const {
+    const float *__restrict__ src, int16_t *__restrict__ sink, size_t n) const {
     for (size_t i = 0; i < n; ++i) {
-        if (src[i] >= 1.0f) {
-            sink[i] = 0x7FFF;
-        } else if (src[i] < -1.0f) {
-            sink[i] = -0x8000;
-        } else {
-            sink[i] = static_cast<int16_t>(src[i] * SCALE);
-        }
+        int32_t s = static_cast<int32_t>(src[i] * SCALE);
+        sink[i] = static_cast<int16_t>(s > I16_MAX ? I16_MAX : (s < I16_MIN ? I16_MIN : s));
     }
 }
 

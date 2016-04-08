@@ -34,6 +34,8 @@ model {
                 signingConfig = $("android.signingConfigs.debugkey")
                 ndk {
                     debuggable true
+                    cppFlags.addAll(["-O3", "-ffast-math", "-funroll-loops", "-fvectorize",
+                                    "-fslp-vectorize-aggressive", "-fslp-vectorize"])
                 }
             }
         }
@@ -44,6 +46,7 @@ model {
             // toolchainVersion ""
             cppFlags.addAll(["-Weverything", "-Wno-c++98-compat", "-Wno-c++98-compat-pedantic",
                              "-Wno-system-headers",
+                             "-save-temps=obj",
                              "-std=c++11", "-fno-exceptions", "-fno-rtti"])
             ldLibs.addAll(['atomic', 'android', 'log', 'OpenSLES'])
             stl "c++_static"
