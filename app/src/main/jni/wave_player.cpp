@@ -18,33 +18,34 @@ void WavePlayer::ProcessSLCallback(SLAndroidSimpleBufferQueueItf bq) {
     assert(bq == mPlayBufferQueueItf);
 
     SLresult result;
-    size_t remain = mContext.base + mContext.size - mContext.current;
-    if (remain > 0) {
-        size_t size = remain < AUDIO_DATA_BUFFER_SIZE ? remain : AUDIO_DATA_BUFFER_SIZE;
-        SLint16 *p = const_cast<SLint16 *>(mContext.current);
-        result = (*bq)->Enqueue(bq, static_cast<void *>(p),
+    size_t size = mGraph->Pull(AUDIO_DATA_BUFFER_SIZE);
+    if (size > 0) {
+        result = (*bq)->Enqueue(bq, static_cast<void *>(mPcm),
                                 size * sizeof(SLint16)); // Size given in bytes
         if (result != SL_RESULT_SUCCESS) {
             CheckError(result);
         }
-        mContext.current += size;
+
     }
+    mGraph->Flush();
     if (mJavaCallback != nullptr) {
-        if (remain > 0) {
-            mJavaCallback->Run(mContext.size - remain);
+        if (size > 0) {
+            size_t samples = mGraph->GetSink()->GetSampleCount();
+            mJavaCallback->Run(static_cast<int>(samples));
         } else {
             mJavaCallback->Run(-1);
         }
     }
 }
 
-WavePlayer::WavePlayer(SLmilliHertz sampleRate, SLEngineItf engineItf) :
+WavePlayer::WavePlayer(filter::Graph *graph, SLmilliHertz sampleRate, SLEngineItf engineItf) :
         mOutputMixObj(nullptr),
         mPlayerObj(nullptr),
         mPlayItf(nullptr),
         mVolumeItf(nullptr),
         mPlayBufferQueueItf(nullptr),
-        mJavaCallback(nullptr) {
+        mJavaCallback(nullptr),
+        mGraph(graph) {
     SLresult result;
 
     result = (*engineItf)->CreateOutputMix(engineItf, &mOutputMixObj, 0, nullptr, nullptr);
@@ -105,6 +106,7 @@ WavePlayer::WavePlayer(SLmilliHertz sampleRate, SLEngineItf engineItf) :
     result = (*mPlayItf)->SetPlayState(mPlayItf, SL_PLAYSTATE_STOPPED);
     CheckError(result);
 
+    mGraph->SetSinkMemory(mPcm, AUDIO_DATA_BUFFER_SIZE);
 }
 
 WavePlayer::~WavePlayer() {
@@ -127,14 +129,6 @@ WavePlayer::~WavePlayer() {
         delete mJavaCallback;
     }
 }
-
-
-void WavePlayer::SetContext(const SLint16 *base, const SLint16 *current, size_t size) {
-    mContext.base = base;
-    mContext.current = current;
-    mContext.size = size;
-}
-
 
 void WavePlayer::SetCallback(JavaVM *vm, jclass clazz, std::string methodName) {
     if (mJavaCallback != nullptr) {

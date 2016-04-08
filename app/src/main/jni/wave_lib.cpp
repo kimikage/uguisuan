@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "wave_engine.h"
-#include "log.h"
 
 namespace uguisuan {
 
@@ -60,9 +59,11 @@ Java_com_github_kimikage_uguisuan_WavePlayerService_startPlay(JNIEnv *env, jclas
     jboolean isCopy = JNI_FALSE;
     const SLint16 *pPcm = reinterpret_cast<const SLint16 *>(env->GetByteArrayElements(pcm,
                                                                                       &isCopy));
-    jsize size = env->GetArrayLength(pcm);
-    player->SetContext(pPcm, pPcm, size / sizeof(SLint16));
+    size_t size = static_cast<size_t>(env->GetArrayLength(pcm));
 
+    filter::Graph *graph = WaveEngine::GetInstance().GetGraph();
+    graph->SetSourceMemory(pPcm, size / sizeof(SLint16));
+    graph->GetSink()->ResetSampleCount();
     if (SL_BOOLEAN_FALSE == player->Start()) {
         LOGE("====%s failed", __FUNCTION__);
         return;

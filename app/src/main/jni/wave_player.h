@@ -8,20 +8,12 @@
 #ifndef UGUISUAN_WAVE_PLAYER_H
 #define UGUISUAN_WAVE_PLAYER_H
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreserved-id-macro"
-
-#include <cstdint>
-#include <cstddef>
-
-#pragma clang diagnostic pop
-
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
 
 #include "wave_engine.h"
-#include "wave_context.h"
 #include "java_callback.h"
+#include "filter/graph.h"
 
 namespace uguisuan {
 
@@ -45,15 +37,14 @@ private:
     SLVolumeItf mVolumeItf;
     SLAndroidSimpleBufferQueueItf mPlayBufferQueueItf;
 
-    WaveContext mContext;
     JavaCallback *mJavaCallback;
+    filter::Graph *mGraph;
+    int16_t mPcm[AUDIO_DATA_BUFFER_SIZE];
 
 public:
-    explicit WavePlayer(SLmilliHertz sampleRate, SLEngineItf engineItf);
+    explicit WavePlayer(filter::Graph *graph, SLmilliHertz sampleRate, SLEngineItf engineItf);
 
     ~WavePlayer();
-
-    void SetContext(const SLint16 *base, const SLint16 *current, size_t size);
 
     void SetCallback(JavaVM *vm, jclass clazz, std::string methodName);
 

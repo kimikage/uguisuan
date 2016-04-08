@@ -8,18 +8,10 @@
 #ifndef UGUISUAN_WAVE_ENGINE_H
 #define UGUISUAN_WAVE_ENGINE_H
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreserved-id-macro"
-
-#include <cstdint>
-
-#pragma clang diagnostic pop
-
-#include <cassert>
-
 #include <SLES/OpenSLES.h>
 
 #include "wave_player.h"
+#include "filter/graph.h"
 
 namespace uguisuan {
 
@@ -32,6 +24,7 @@ private:
     SLEngineItf mEngineItf;
 
     WavePlayer *mPlayer;
+    filter::Graph *mGraph;
 private:
     WaveEngine();
 
@@ -55,6 +48,10 @@ public:
 
     inline WavePlayer *GetPlayer() const {
         return mPlayer;
+    }
+
+    inline filter::Graph *GetGraph() const {
+        return mGraph;
     }
 
 };

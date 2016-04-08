@@ -12,7 +12,8 @@ namespace uguisuan {
 WaveEngine::WaveEngine() :
         mEngineObj(nullptr),
         mEngineItf(nullptr),
-        mPlayer(nullptr) {
+        mPlayer(nullptr),
+        mGraph(nullptr) {
 
 }
 
@@ -34,16 +35,22 @@ SLresult WaveEngine::CreateEngine() {
     result = (*mEngineObj)->GetInterface(mEngineObj, SL_IID_ENGINE, &mEngineItf);
     CheckError(result);
 
+    mGraph = new filter::Graph();
 
-    mPlayer = new WavePlayer(SL_SAMPLINGRATE_48, mEngineItf);
+    mPlayer = new WavePlayer(mGraph, SL_SAMPLINGRATE_48, mEngineItf);
+
     return result;
 }
 
 SLresult WaveEngine::DeleteEngine() {
     SLresult result = SL_RESULT_SUCCESS;
-    if (mPlayer) {
+    if (mPlayer != nullptr) {
         delete mPlayer;
         mPlayer = nullptr;
+    }
+    if (mGraph != nullptr) {
+        delete mGraph;
+        mGraph = nullptr;
     }
     if (mEngineObj != nullptr) {
         (*mEngineObj)->Destroy(mEngineObj);
